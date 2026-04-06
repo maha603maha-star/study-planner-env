@@ -1,29 +1,18 @@
 import random
 
 class MyStudyPlannerEnv:
-    def __init__(self, level="medium"):
-        self.level = level
+    def __init__(self):
+        self.action_space = [0, 1, 2, 3]
         self.reset()
 
     def reset(self):
-        if self.level == "easy":
-            self.subjects = {"Math": 2, "OS": 1}
-        elif self.level == "medium":
-            self.subjects = {"Math": 3, "OS": 2, "DBMS": 2, "AI": 1}
-        else:
-            self.subjects = {"Math": 4, "OS": 3, "DBMS": 3, "AI": 2, "CN": 2}
-
-        self.priority = {sub: random.randint(1, 3) for sub in self.subjects}
-        self.action_space = list(self.subjects.keys())
+        self.tasks = [3, 2, 2, 1]
         self.time_left = 10
         self.done = False
-
         return self._get_obs()
 
     def _get_obs(self):
-        if not hasattr(self, "subjects"):
-            return [0]
-        return [self.time_left] + list(self.subjects.values())
+        return [self.time_left] + self.tasks
 
     def step(self, action):
         if self.done:
@@ -31,18 +20,18 @@ class MyStudyPlannerEnv:
 
         reward = 0
 
-        if action in self.subjects:
-            if self.subjects[action] > 0:
-                self.subjects[action] -= 1
-                reward += 5 + self.priority[action]
+        if action < len(self.tasks):
+            if self.tasks[action] > 0:
+                self.tasks[action] -= 1
+                reward += 5
             else:
                 reward -= 2
 
         self.time_left -= 1
         reward -= 1
 
-        if all(v == 0 for v in self.subjects.values()):
-            reward += 20 + self.time_left
+        if sum(self.tasks) == 0:
+            reward += 20
             self.done = True
 
         if self.time_left <= 0:
