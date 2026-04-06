@@ -1,8 +1,9 @@
+import gradio as gr
 from env import MyStudyPlannerEnv
 import random
 
 def run():
-    env = MyStudyPlannerEnv(level="medium")
+    env = MyStudyPlannerEnv()
     obs = env.reset()
     done = False
     total_reward = 0
@@ -14,4 +15,5 @@ def run():
 
     return f"Final Score: {total_reward}"
 
-print(run())
+iface = gr.Interface(fn=run, inputs=[], outputs="text")
+iface.launch()
