@@ -1,19 +1,20 @@
-import gradio as gr
+from fastapi import FastAPI
 from env import MyStudyPlannerEnv
-import random
 
-def run():
-    env = MyStudyPlannerEnv()
+app = FastAPI()
+
+env = MyStudyPlannerEnv()
+
+@app.post("/reset")
+def reset():
     obs = env.reset()
-    done = False
-    total_reward = 0
+    return {"observation": obs}
 
-    while not done:
-        action = random.choice(env.action_space)
-        obs, reward, done, _ = env.step(action)
-        total_reward += reward
-
-    return f"Final Score: {total_reward}"
-
-iface = gr.Interface(fn=run, inputs=[], outputs="text")
-iface.launch()
+@app.post("/step")
+def step(action: int):
+    obs, reward, done, _ = env.step(action)
+    return {
+        "observation": obs,
+        "reward": reward,
+        "done": done
+    }
