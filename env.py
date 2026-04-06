@@ -1,7 +1,7 @@
 import random
 
 class MyStudyPlannerEnv:
-    def __init__(self, level="easy"):
+    def __init__(self, level="medium"):
         self.level = level
         self.reset()
 
@@ -21,11 +21,9 @@ class MyStudyPlannerEnv:
         return self._get_obs()
 
     def _get_obs(self):
-        return {
-            "subjects": self.subjects.copy(),
-            "priority": self.priority,
-            "time_left": self.time_left
-        }
+        if not hasattr(self, "subjects"):
+            return [0]
+        return [self.time_left] + list(self.subjects.values())
 
     def step(self, action):
         if self.done:
